@@ -8,6 +8,24 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication">
+        <service
+            android:name=".UserService"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.fredprojects.aidlservice.UserService" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".UserServiceWithCallbacks"
+            android:enabled="true"
+            android:process=":remote"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.fredprojects.aidlservice.UserServiceWithCallbacks" />
+            </intent-filter>
+        </service>
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
