@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "com.fredprojects.myapplication"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.fredprojects.myapplication"
         minSdk = 26
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -33,9 +33,13 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+    buildFeatures {
+        viewBinding = true
+    }
 }
 
 dependencies {
+    implementation(project(":aidlsdk"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

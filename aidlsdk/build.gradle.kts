@@ -4,7 +4,7 @@ plugins {
 
 android {
     namespace = "com.fredprojects.aidlsdk"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 26
@@ -32,9 +32,6 @@ android {
 }
 
 dependencies {
-
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
