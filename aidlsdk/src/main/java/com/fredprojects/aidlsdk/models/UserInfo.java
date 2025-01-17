@@ -12,7 +12,7 @@ public class UserInfo implements Parcelable {
         this.id = id;
     }
 
-    private UserInfo(Parcel in) {
+    protected UserInfo(Parcel in) {
         login = in.readString();
         id = in.readInt();
     }
@@ -44,7 +44,12 @@ public class UserInfo implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int flags) {
-        parcel.writeInt(id);
         parcel.writeString(login);
+        parcel.writeInt(id);
+    }
+
+    @Override
+    public String toString() {
+        return "UserInfo {" + "login='" + login + '\'' + ", id=" + id + '}';
     }
 }
