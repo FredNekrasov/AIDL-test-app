@@ -3,6 +3,7 @@ package com.fredprojects.aidlservice
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
+import android.os.RemoteException
 import android.util.Log
 import com.fredprojects.aidlsdk.UserAIDLWithCallback
 import com.fredprojects.aidlsdk.models.UserInfo
@@ -22,7 +23,7 @@ class UserServiceWithCallbacks : Service() {
                         Log.e("fred", userData.toString())
                         callback.onSuccess(userData)
                     }
-                } catch (e: InterruptedException) {
+                } catch (e: RemoteException) {
                     callback.onError(e.message)
                 }
             }
@@ -34,7 +35,7 @@ class UserServiceWithCallbacks : Service() {
                         userData = userInfo
                         callback.onSuccess(userInfo)
                     }
-                } catch(e: InterruptedException) {
+                } catch(e: RemoteException) {
                     callback.onError(e.message)
                 }
             }

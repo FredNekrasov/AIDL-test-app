@@ -23,27 +23,36 @@ class DefUserAidlImpl(
             }
         }
     }
-    suspend fun getUserInfoOrNull(): UserInfo? = with(serviceConnector) {
+    suspend fun getUserInfoOrNull(): UserInfo? {
         Log.e("fred", "getUserInfoOrNull start")
-        serviceConnector.connect()
-        withContext(Dispatchers.IO) {
-            userStorage?.getUserInfo(defResultCallback)
-            Log.e("fred", "$userStorage userStorage, $userData userData")
+        try {
+            executeFunc { serviceConnector.userStorage?.getUserInfo(defResultCallback) }
+        } catch(e: Exception) {
+            return null
         }
-        serviceConnector.disconnect()
         Log.e("fred", "getUserInfoOrNull end")
         return userData
     }
+    /**
+     * @return true if success otherwise false
+     */
     suspend fun setUserInfo(userInfo: UserInfo): Boolean = with(serviceConnector) {
         Log.e("fred", "setUserInfo start")
-//        if(userStorage == null) return false
-        serviceConnector.connect()
-        withContext(Dispatchers.IO) {
-            userStorage?.setUserInfo(userInfo, defResultCallback)
-            Log.e("fred", "$userStorage userStorage, $userData userData")
+        if(userStorage == null) return false
+        try {
+            executeFunc { userStorage?.setUserInfo(userInfo, defResultCallback) }
+        } catch(e: Exception) {
+            return false
         }
-        serviceConnector.disconnect()
         Log.e("fred", "setUserInfo end")
         return true
+    }
+    private suspend fun executeFunc(action: () -> Unit) = with(serviceConnector) {
+        connect()
+        withContext(Dispatchers.IO) {
+            action()
+            Log.e("fred", "$userStorage userStorage, $userData userData")
+        }
+        disconnect()
     }
 }
