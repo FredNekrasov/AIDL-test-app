@@ -15,25 +15,19 @@ class UserServiceWithCallbacks : Service() {
     override fun onBind(intent: Intent): IBinder {
         return object : UserAIDLWithCallback.Stub() {
             override fun getUserInfo(callback: ResultCallback?) {
-                if(callback == null) {
-                    Log.e("fred", "callback is null")
-                    return
-                }
+                if(callback == null) return println("fred: callback is null")
                 try {
                     scope.launch {
                         delay(3000)
+                        Log.e("fred", userData.toString())
                         callback.onSuccess(userData)
                     }
                 } catch (e: InterruptedException) {
                     callback.onError(e.message)
                 }
             }
-
             override fun setUserInfo(userInfo: UserInfo?, callback: ResultCallback?) {
-                if(callback == null) {
-                    Log.e("fred", "callback is null")
-                    return
-                }
+                if(callback == null) return println("fred: callback is null")
                 try {
                     scope.launch {
                         delay(3000)
