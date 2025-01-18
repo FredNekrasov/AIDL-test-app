@@ -9,14 +9,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication">
         <service
-            android:name=".UserService"
-            android:enabled="true"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="com.fredprojects.aidlservice.UserService" />
-            </intent-filter>
-        </service>
-        <service
             android:name=".UserServiceWithCallbacks"
             android:enabled="true"
             android:process=":remote"
