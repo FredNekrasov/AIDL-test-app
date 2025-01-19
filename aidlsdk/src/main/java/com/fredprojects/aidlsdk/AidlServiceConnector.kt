@@ -2,7 +2,6 @@ package com.fredprojects.aidlsdk
 
 import android.content.*
 import android.os.IBinder
-import android.util.Log
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
@@ -10,7 +9,6 @@ internal class AidlServiceConnector(
     private val context: Context
 ) {
     suspend fun connect(): Pair<ServiceConnection, UserAIDLWithCallback?> = suspendCancellableCoroutine {
-        Log.e("fred", "connect")
         val serviceConnection = object : ServiceConnection {
             override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
                 it.resume(this to UserAIDLWithCallback.Stub.asInterface(service))
@@ -25,7 +23,6 @@ internal class AidlServiceConnector(
         if(!isConnected) it.resume(serviceConnection to null)
     }
     fun disconnect(serviceConnection: ServiceConnection) {
-        Log.d("fred", "disconnect")
         context.unbindService(serviceConnection)
     }
     companion object {

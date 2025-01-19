@@ -1,7 +1,6 @@
 package com.fredprojects.aidlsdk
 
 import android.content.Context
-import android.util.Log
 import com.fredprojects.aidlsdk.models.UserInfo
 import com.fredprojects.aidlsdk.utils.ResultCallback
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -16,11 +15,9 @@ class DefUserAidlImpl(
     ): UserInfo? = suspendCancellableCoroutine {
         val resultCallback = object : ResultCallback.Stub() {
             override fun onSuccess(info: UserInfo?) {
-                Log.e("fred", "ResCallback onSuccess $info")
                 it.resume(info)
             }
             override fun onError(errorMessage: String?) {
-                Log.e("fred", "ResCallback onError $errorMessage")
                 it.resume(null)
             }
         }
@@ -44,9 +41,9 @@ class DefUserAidlImpl(
         return try {
             val (serviceConnection, userStorage) = serviceConnector.connect()
             if(userStorage == null) return false
-            val user = awaitResponse { userStorage.setUserInfo(userInfo, it) }
+            val isSuccess = awaitResponse { userStorage.setUserInfo(userInfo, it) } != null
             serviceConnector.disconnect(serviceConnection)
-            user != null
+            isSuccess
         } catch(e: Exception) {
             false
         }
