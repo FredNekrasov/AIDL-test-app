@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
                 binding.editTextText.id
             )
             lifecycleScope.launch {
-                userAidl.setUserInfo(user)
+                userAidl.setUserInfo(user).let { binding.textView.text = it.toString() }
             }
         }
     }
