@@ -3,7 +3,7 @@ package com.fredprojects.aidlsdk
 import android.content.Context
 import com.fredprojects.aidlsdk.models.UserInfo
 import com.fredprojects.aidlsdk.utils.ResultCallback
-import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.*
 import kotlin.coroutines.resume
 
 class DefUserAidlImpl(
@@ -12,40 +12,38 @@ class DefUserAidlImpl(
     private val serviceConnector by lazy { AidlServiceConnector(context) }
     private suspend fun awaitResponse(
         action: (ResultCallback) -> Unit
-    ): UserInfo? = suspendCancellableCoroutine {
+    ): UserInfo? = suspendCancellableCoroutine { continuation ->
         val resultCallback = object : ResultCallback.Stub() {
             override fun onSuccess(info: UserInfo?) {
-                it.resume(info)
+                continuation.resume(info)
             }
             override fun onError(errorMessage: String?) {
-                it.resume(null)
+                continuation.resume(null)
             }
         }
         action(resultCallback)
-    }
-    suspend fun getUserInfoOrNull(): UserInfo? {
-        return try {
-            val (serviceConnection, userStorage) = serviceConnector.connect()
-            if(userStorage == null) return null
-            val user = awaitResponse { userStorage.getUserInfo(it) }
-            serviceConnector.disconnect(serviceConnection)
-            user
-        } catch(e: Exception) {
-            null
+        continuation.invokeOnCancellation {
+            resultCallback.onError(it?.message)
         }
+    }
+    suspend fun getUserInfoOrNull(): UserInfo? = executeUserStorageAction { userStorage ->
+        awaitResponse { userStorage.getUserInfo(it) }
     }
     /**
      * @return true if success otherwise false
      */
-    suspend fun setUserInfo(userInfo: UserInfo): Boolean {
+    suspend fun setUserInfo(userInfo: UserInfo): Boolean = executeUserStorageAction { userStorage ->
+        awaitResponse { userStorage.setUserInfo(userInfo, it) }
+    } != null
+    private suspend fun<T> executeUserStorageAction(action: suspend (UserAIDLWithCallback) -> T): T? {
         return try {
             val (serviceConnection, userStorage) = serviceConnector.connect()
-            if(userStorage == null) return false
-            val isSuccess = awaitResponse { userStorage.setUserInfo(userInfo, it) } != null
-            serviceConnector.disconnect(serviceConnection)
-            isSuccess
-        } catch(e: Exception) {
-            false
+            if(userStorage == null) return null
+            action(userStorage).also {
+                serviceConnector.disconnect(serviceConnection)
+            }
+        } catch (e: Exception) {
+            null
         }
     }
 }
