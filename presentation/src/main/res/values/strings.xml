@@ -1,0 +1,8 @@
+<resources>
+    <string name="setData">set</string>
+    <string name="getData">get</string>
+    <string name="login">login</string>
+    <string name="success">successfully completed</string>
+    <string name="failed">operation failed</string>
+    <string name="invalid">invalid input</string>
+</resources>
