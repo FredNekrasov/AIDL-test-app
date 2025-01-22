@@ -36,14 +36,11 @@ class DefUserAidlImpl(
         awaitResponse { userStorage.setUserInfo(userInfo, it) }
     } != null
     private suspend fun<T> executeUserStorageAction(action: suspend (UserAIDLWithCallback) -> T): T? {
-        val (serviceConnection, userStorage) = serviceConnector.connect()
+        val (serviceConnection, userStorage) = runCatching { serviceConnector.connect() }.getOrNull() ?: return null
         if(userStorage == null) return null
-        return runCatching {
-            action(userStorage)
-        }.onSuccess {
-            serviceConnector.disconnect(serviceConnection)
-        }.onFailure {
-            serviceConnector.disconnect(serviceConnection)
-        }.getOrNull()
+        return runCatching { action(userStorage) }
+            .onSuccess { serviceConnector.disconnect(serviceConnection) }
+            .onFailure { serviceConnector.disconnect(serviceConnection) }
+            .getOrNull()
     }
 }
